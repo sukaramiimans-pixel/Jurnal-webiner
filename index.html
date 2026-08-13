@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en" class="dark h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOGOS — Personal Reading & Action Journal</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        bgPrimary: '#0D0D0D',
+                        bgSecondary: '#141414',
+                        cardBg: '#1A1A1A',
+                        cardHover: '#242424',
+                        borderMuted: '#2A2A2A',
+                        accentAmber: '#E6A15C',
+                        accentSilver: '#E5E5E5'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Newsreader', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0D0D0D; }
+        ::-webkit-scrollbar-thumb { background: #2A2A2A; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3A3A3A; }
+        
+        /* Audio Visualizer Pulse Animation */
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 0.4; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+        .visualizer-active {
+            animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+</head>
+<body class="bg-bgPrimary text-neutral-100 font-sans antialiased h-full flex overflow-hidden selection:bg-accentAmber selection:text-black">
+
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="w-64 border-r border-borderMuted bg-bgSecondary flex flex-col justify-between hidden md:flex z-20">
+        <div>
+            <!-- App Logo -->
+            <div class="h-16 flex items-center px-6 border-b border-borderMuted">
+                <span class="font-serif tracking-widest text-2xl font-bold text-accentSilver">LOGOS</span>
+                <span class="ml-2 text-xs font-mono px-1.5 py-0.5 rounded border border-borderMuted text-neutral-400">v2.0</span>
+            </div>
+            
+            <!-- Nav Links -->
+            <nav class="p-4 space-y-1">
+                <a href="#dashboard" onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium bg-cardBg text-accentAmber border border-borderMuted">
+                    <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#library" onclick="switchTab('library')" id="nav-library" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-neutral-400 hover:text-neutral-100 hover:bg-cardBg transition">
+                    <i data-lucide="book-open" class="w-4 h-4"></i>
+                    <span>Library & Tracker</span>
+                </a>
+                <a href="#actions" onclick="switchTab('actions')" id="nav-actions" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-neutral-400 hover:text-neutral-100 hover:bg-cardBg transition">
+                    <i data-lucide="check-square" class="w-4 h-4"></i>
+                    <span>Action Logs</span>
+                </a>
+                <a href="#ai-mirror" onclick="switchTab('ai-mirror')" id="nav-ai-mirror" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-neutral-400 hover:text-neutral-100 hover:bg-cardBg transition">
+                    <i data-lucide="sparkles" class="w-4 h-4 text-accentAmber"></i>
+                    <span>Reflection AI</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- User Profile Section -->
+        <div class="p-4 border-t border-borderMuted flex items-center space-x-3">
+            <div class="w-9 h-9 rounded-full bg-neutral-800 border border-neutral-700 flex items-center justify-center text-sm font-semibold text-accentAmber">
+                AM
+            </div>
+            <div class="overflow-hidden">
+                <p class="text-sm font-medium text-neutral-200 truncate">Aurelius M.</p>
+                <p class="text-xs text-neutral-500 truncate">Deep Work Mode</p>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-1 flex flex-col h-full overflow-hidden relative">
+        
+        <!-- Header Bar -->
+        <header class="h-16 border-b border-borderMuted px-6 flex items-center justify-between bg-bgPrimary/80 backdrop-blur">
+            <div class="flex items-center space-x-4">
+                <button class="md:hidden text-neutral-400 hover:text-white">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+                <span id="page-title" class="text-sm font-semibold tracking-wider uppercase text-neutral-400">Dashboard</span>
+            </div>
+            <div class="flex items-center space-x-3">
+                <button onclick="switchTab('ai-mirror')" class="flex items-center space-x-2 px-3 py-1.5 rounded-full bg-neutral-900 border border-neutral-700 hover:border-accentAmber text-xs transition">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>AI Mirror Active</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- DASHBOARD TAB -->
+        <div id="tab-dashboard" class="tab-content flex-1 overflow-y-auto p-6 md:p-8 space-y-8">
+            <!-- Reflective Quote -->
+            <section class="border border-borderMuted rounded-xl p-6 bg-cardBg/40 backdrop-blur relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 opacity-5 text-neutral-100">
+                    <i data-lucide="quote" class="w-48 h-48"></i>
+                </div>
+                <p class="text-xs font-mono uppercase tracking-widest text-accentAmber mb-2">Daily Reflection</p>
+                <blockquote class="font-serif italic text-xl md:text-2xl text-neutral-200 max-w-3xl leading-relaxed">
+                    "We do not learn from experience... we learn from reflecting on experience."
+                </blockquote>
+                <p class="text-xs text-neutral-400 mt-2">— John Dewey</p>
+            </section>
+
+            <!-- Currently Reading Grid -->
+            <section class="space-y-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-lg font-semibold text-neutral-200">Currently Digesting</h2>
+                    <button class="text-xs text-accentAmber hover:underline flex items-center space-x-1">
+                        <span>View All Books</span>
+                        <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Book Card 1 -->
+                    <div class="bg-cardBg border border-borderMuted rounded-xl p-5 hover:border-neutral-600 transition flex flex-col justify-between group">
+                        <div class="space-y-4">
+                            <div class="flex space-x-4">
+                                <div class="w-16 h-24 bg-neutral-800 rounded border border-neutral-700 flex-shrink-0 flex items-center justify-center font-serif text-xs text-neutral-500 text-center p-2 shadow-lg">
+                                    [ Atomic Habits ]
+                                </div>
+                                <div class="space-y-1">
+                                    <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-neutral-800 text-neutral-300">Self-Mastery</span>
+                                    <h3 class="font-serif font-semibold text-lg text-neutral-100 group-hover:text-accentAmber transition">Atomic Habits</h3>
+                                    <p class="text-xs text-neutral-400">James Clear</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Progress Bar -->
+                            <div class="space-y-1">
+                                <div class="flex justify-between text-xs font-mono text-neutral-400">
+                                    <span>Progress</span>
+                                    <span>72%</span>
+                                </div>
+                                <div class="w-full bg-neutral-800 h-1.5 rounded-full overflow-hidden">
+                                    <div class="bg-accentAmber h-full w-[72%]"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button onclick="openNoteDrawer('Atomic Habits')" class="mt-6 w-full py-2 bg-neutral-900 border border-borderMuted rounded-lg text-xs font-medium text-neutral-300 hover:bg-neutral-800 hover:text-white transition flex items-center justify-center space-x-2">
+                            <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+                            <span>Notes & Action Points</span>
+                        </button>
+                    </div>
+
+                    <!-- Book Card 2 -->
+                    <div class="bg-cardBg border border-borderMuted rounded-xl p-5 hover:border-neutral-600 transition flex flex-col justify-between group">
+                        <div class="space-y-4">
+                            <div class="flex space-x-4">
+                                <div class="w-16 h-24 bg-neutral-800 rounded border border-neutral-700 flex-shrink-0 flex items-center justify-center font-serif text-xs text-neutral-500 text-center p-2 shadow-lg">
+                                    [ Deep Work ]
+                                </div>
+                                <div class="space-y-1">
+                                    <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-neutral-800 text-neutral-300">Productivity</span>
+                                    <h3 class="font-serif font-semibold text-lg text-neutral-100 group-hover:text-accentAmber transition">Deep Work</h3>
+                                    <p class="text-xs text-neutral-400">Cal Newport</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Progress Bar -->
+                            <div class="space-y-1">
+                                <div class="flex justify-between text-xs font-mono text-neutral-400">
+                                    <span>Progress</span>
+                                    <span>40%</span>
+                                </div>
+                                <div class="w-full bg-neutral-800 h-1.5 rounded-full overflow-hidden">
+                                    <div class="bg-accentAmber h-full w-[40%]"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button onclick="openNoteDrawer('Deep Work')" class="mt-6 w-full py-2 bg-neutral-900 border border-borderMuted rounded-lg text-xs font-medium text-neutral-300 hover:bg-neutral-800 hover:text-white transition flex items-center justify-center space-x-2">
+                            <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+                            <span>Notes & Action Points</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- AI COMPANION / REFLECTION AI TAB -->
+        <div id="tab-ai-mirror" class="tab-content flex-1 hidden flex-col md:flex-row h-full overflow-hidden">
+            <!-- Left Panel: Chat Interface -->
+            <div class="flex-1 flex flex-col h-full border-r border-borderMuted">
+                <!-- Context Header -->
+                <div class="p-4 border-b border-borderMuted bg-bgSecondary flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <i data-lucide="book-open" class="w-4 h-4 text-accentAmber"></i>
+                        <span class="text-xs text-neutral-400">Context:</span>
+                        <span id="ai-context-book" class="text-xs font-mono px-2 py-0.5 bg-neutral-800 rounded border border-neutral-700 text-neutral-200">Atomic Habits</span>
+                    </div>
+                    <button class="text-xs text-neutral-400 hover:text-white underline">Change Context</button>
+                </div>
+
+                <!-- Chat History -->
+                <div id="chat-history" class="flex-1 overflow-y-auto p-6 space-y-4">
+                    <!-- AI Message -->
+                    <div class="flex space-x-3">
+                        <div class="w-8 h-8 rounded-full bg-accentAmber/10 border border-accentAmber/30 flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="sparkles" class="w-4 h-4 text-accentAmber"></i>
+                        </div>
+                        <div class="bg-cardBg border border-borderMuted rounded-2xl p-4 max-w-xl space-y-2">
+                            <p class="text-xs font-mono text-accentAmber">The Mirror AI</p>
+                            <p class="text-sm text-neutral-200 leading-relaxed">
+                                Welcome back. I'm ready to synthesize your thoughts or help you extract actionable wisdom from <span class="font-semibold text-white">Atomic Habits</span>. What's on your mind?
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Suggested Chips -->
+                <div class="px-6 py-2 border-t border-borderMuted bg-bgPrimary flex space-x-2 overflow-x-auto no-scrollbar">
+                    <button onclick="sendQuickPrompt(this)" class="whitespace-nowrap px-3 py-1 rounded-full border border-neutral-800 bg-neutral-900 text-xs text-neutral-400 hover:border-neutral-600 hover:text-white transition">
+                        Synthesize key takeaways
+                    </button>
+                    <button onclick="sendQuickPrompt(this)" class="whitespace-nowrap px-3 py-1 rounded-full border border-neutral-800 bg-neutral-900 text-xs text-neutral-400 hover:border-neutral-600 hover:text-white transition">
+                        Suggest an action plan based on my notes
+                    </button>
+                    <button onclick="sendQuickPrompt(this)" class="whitespace-nowrap px-3 py-1 rounded-full border border-neutral-800 bg-neutral-900 text-xs text-neutral-400 hover:border-neutral-600 hover:text-white transition">
+                        Reflect on today's progress
+                    </button>
+                </div>
+
+                <!-- Input Box -->
+                <div class="p-4 border-t border-borderMuted bg-bgSecondary">
+                    <form id="chat-form" onsubmit="handleChatSubmit(event)" class="flex items-center space-x-2">
+                        <input type="text" id="chat-input" placeholder="Type a reflection or question..." class="flex-1 bg-neutral-900 border border-borderMuted rounded-xl px-4 py-3 text-sm text-neutral-100 focus:outline-none focus:border-accentAmber transition placeholder-neutral-500">
+                        <button type="button" onclick="toggleVoiceMode()" id="mic-btn" class="p-3 rounded-xl bg-neutral-900 border border-borderMuted text-neutral-400 hover:text-white hover:border-neutral-600 transition">
+                            <i data-lucide="mic" class="w-4 h-4"></i>
+                        </button>
+                        <button type="submit" class="p-3 rounded-xl bg-neutral-200 text-black hover:bg-white transition font-medium">
+                            <i data-lucide="send" class="w-4 h-4"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Right Panel: Visualizer AI Audio-Visual -->
+            <div class="w-full md:w-80 bg-neutral-950 p-6 flex flex-col items-center justify-between border-t md:border-t-0 md:border-l border-borderMuted">
+                <div class="text-center space-y-1">
+                    <p class="text-xs font-mono uppercase tracking-widest text-neutral-500">Live Voice Mirror</p>
+                    <p id="ai-status" class="text-xs text-emerald-400">Ready</p>
+                </div>
+
+                <!-- Visual Orb -->
+                <div class="relative flex items-center justify-center my-8">
+                    <div id="visualizer-ring" class="w-40 h-40 rounded-full border-2 border-accentAmber/20 flex items-center justify-center transition-all duration-500">
+                        <div id="visualizer-core" class="w-24 h-24 rounded-full bg-gradient-to-tr from-neutral-800 to-neutral-900 border border-neutral-700 flex items-center justify-center shadow-2xl transition-all duration-300">
+                            <i id="visualizer-icon" data-lucide="sparkles" class="w-8 h-8 text-neutral-500 transition"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full space-y-3 text-center">
+                    <p id="voice-subtitles" class="text-xs italic text-neutral-400 min-h-[3rem]">
+                        "Klik tombol mikrofon atau aktifkan mode suara untuk berinteraksi secara lisan."
+                    </p>
+                    <button id="voice-toggle-btn" onclick="toggleVoiceMode()" class="w-full py-2.5 rounded-lg bg-neutral-900 border border-borderMuted text-xs font-mono text-neutral-300 hover:border-accentAmber transition flex items-center justify-center space-x-2">
+                        <i data-lucide="radio" class="w-4 h-4 text-accentAmber"></i>
+                        <span>Toggle Live Voice</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- DRAWER DETAIL BUKU / NOTES -->
+    <div id="note-drawer" class="fixed inset-y-0 right-0 w-full max-w-xl bg-cardBg border-l border-borderMuted shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out z-50 flex flex-col">
+        <div class="p-6 border-b border-borderMuted flex items-center justify-between">
+            <h2 id="drawer-title" class="font-serif text-xl font-bold text-neutral-100">Book Details</h2>
+            <button onclick="closeNoteDrawer()" class="text-neutral-400 hover:text-white p-1">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+        
+        <div class="p-6 flex-1 overflow-y-auto space-y-6">
+            <!-- Meta Details -->
+            <div class="grid grid-cols-2 gap-4 p-4 rounded-lg bg-neutral-900/50 border border-borderMuted text-xs font-mono">
+                <div>
+                    <span class="text-neutral-500 block">Author</span>
+                    <span class="text-neutral-200">James Clear</span>
+                </div>
+                <div>
+                    <span class="text-neutral-500 block">Finished Date</span>
+                    <span class="text-neutral-200">Oct 14, 2023</span>
+                </div>
+                <div>
+                    <span class="text-neutral-500 block">Rating</span>
+                    <span class="text-accentAmber">★★★★★ (5/5)</span>
+                </div>
+                <div>
+                    <span class="text-neutral-500 block">Status</span>
+                    <span class="text-emerald-400">Implementing</span>
+                </div>
+            </div>
+
+            <!-- Section 1: Key Takeaways -->
+            <div class="space-y-3">
+                <h3 class="text-sm font-semibold uppercase tracking-wider text-accentAmber">1. Key Takeaways & Core Concepts</h3>
+                <div class="prose prose-invert text-xs text-neutral-300 space-y-2 leading-relaxed bg-neutral-900 p-4 rounded-lg border border-borderMuted">
+                    <p>• <strong>1% Improvement Daily:</strong> Small habits compound exponentially over time.</p>
+                    <p>• <strong>Identity-Based Habits:</strong> Focus on who you wish to become, not what you want to achieve.</p>
+                    <p>• <strong>Four Laws of Behavior Change:</strong> Make it obvious, attractive, easy, and satisfying.</p>
+                </div>
+            </div>
+
+            <!-- Section 2: Applied Action Items -->
+            <div class="space-y-3">
+                <h3 class="text-sm font-semibold uppercase tracking-wider text-accentAmber">2. Applied Action Items</h3>
+                <div class="space-y-2">
+                    <label class="flex items-center space-x-3 p-3 rounded-lg bg-neutral-900 border border-borderMuted cursor-pointer hover:border-neutral-700">
+                        <input type="checkbox" checked class="rounded border-neutral-700 text-accentAmber focus:ring-0 bg-neutral-800">
+                        <span class="text-xs text-neutral-200">Habit stacking: Read 10 pages immediately after morning coffee.</span>
+                    </label>
+                    <label class="flex items-center space-x-3 p-3 rounded-lg bg-neutral-900 border border-borderMuted cursor-pointer hover:border-neutral-700">
+                        <input type="checkbox" class="rounded border-neutral-700 text-accentAmber focus:ring-0 bg-neutral-800">
+                        <span class="text-xs text-neutral-200">2-Minute Rule: Reduce workout setup friction to under 2 mins.</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Lucide Icons Initialization
+        lucide.createIcons();
+
+        // Switch Tabs Functionality
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('flex'));
+            
+            const activeTab = document.getElementById(`tab-${tabId}`);
+            if (activeTab) {
+                if (tabId === 'ai-mirror') {
+                    activeTab.classList.remove('hidden');
+                    activeTab.classList.add('flex');
+                } else {
+                    activeTab.classList.remove('hidden');
+                }
+            }
+
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.classList.remove('bg-cardBg', 'text-accentAmber', 'border', 'border-borderMuted');
+                el.classList.add('text-neutral-400');
+            });
+            const activeNav = document.getElementById(`nav-${tabId}`);
+            if(activeNav) {
+                activeNav.classList.add('bg-cardBg', 'text-accentAmber', 'border', 'border-borderMuted');
+            }
+
+            document.getElementById('page-title').innerText = tabId.replace('-', ' ');
+        }
+
+        // Note Drawer Controls
+        function openNoteDrawer(title) {
+            document.getElementById('drawer-title').innerText = title;
+            document.getElementById('note-drawer').classList.remove('translate-x-full');
+        }
+
+        function closeNoteDrawer() {
+            document.getElementById('note-drawer').classList.add('translate-x-full');
+        }
+
+        // Chat Mechanics
+        function handleChatSubmit(e) {
+            e.preventDefault();
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if(!text) return;
+
+            appendMessage('user', text);
+            input.value = '';
+
+            // AI Response Simulation
+            setTimeout(() => {
+                const response = `Berdasarkan prinsip dari catatan kamu: "${text}", kuncinya adalah menyederhanakan aksi pertama agar dapat dijalankan secara konsisten setiap hari.`;
+                appendMessage('ai', response);
+                speakAI(response);
+            }, 800);
+        }
+
+        function sendQuickPrompt(btn) {
+            document.getElementById('chat-input').value = btn.innerText;
+            handleChatSubmit(new Event('submit'));
+        }
+
+        function appendMessage(sender, text) {
+            const history = document.getElementById('chat-history');
+            const div = document.createElement('div');
+            div.className = 'flex space-x-3 ' + (sender === 'user' ? 'justify-end' : '');
+            
+            if(sender === 'user') {
+                div.innerHTML = `
+                    <div class="bg-neutral-800 border border-neutral-700 rounded-2xl p-4 max-w-xl">
+                        <p class="text-xs font-mono text-neutral-400 mb-1">You</p>
+                        <p class="text-sm text-neutral-100">${text}</p>
+                    </div>
+                `;
+            } else {
+                div.innerHTML = `
+                    <div class="w-8 h-8 rounded-full bg-accentAmber/10 border border-accentAmber/30 flex items-center justify-center flex-shrink-0">
+                        <i data-lucide="sparkles" class="w-4 h-4 text-accentAmber"></i>
+                    </div>
+                    <div class="bg-cardBg border border-borderMuted rounded-2xl p-4 max-w-xl space-y-2">
+                        <p class="text-xs font-mono text-accentAmber">The Mirror AI</p>
+                        <p class="text-sm text-neutral-200 leading-relaxed">${text}</p>
+                    </div>
+                `;
+            }
+            history.appendChild(div);
+            lucide.createIcons();
+            history.scrollTop = history.scrollHeight;
+        }
+
+        // Speech & Visualizer Engine
+        let isListening = false;
+        let recognition = null;
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.lang = 'id-ID';
+
+            recognition.onstart = () => {
+                isListening = true;
+                updateVisualizer(true, 'Listening...');
+            };
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById('voice-subtitles').innerText = `"${transcript}"`;
+                document.getElementById('chat-input').value = transcript;
+                handleChatSubmit(new Event('submit'));
+            };
+
+            recognition.onend = () => {
+                isListening = false;
+                updateVisualizer(false, 'Ready');
+            };
+        }
+
+        function toggleVoiceMode() {
+            if (!recognition) {
+                alert('Browser Anda tidak mendukung Web Speech API.');
+                return;
+            }
+            if (isListening) {
+                recognition.stop();
+            } else {
+                recognition.start();
+            }
+        }
+
+        function speakAI(text) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'id-ID';
+                
+                utterance.onstart = () => {
+                    updateVisualizer(true, 'Speaking...', true);
+                    document.getElementById('voice-subtitles').innerText = `"${text}"`;
+                };
+                
+                utterance.onend = () => {
+                    updateVisualizer(false, 'Ready');
+                };
+
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function updateVisualizer(active, statusText, isSpeaking = false) {
+            const ring = document.getElementById('visualizer-ring');
+            const core = document.getElementById('visualizer-core');
+            const icon = document.getElementById('visualizer-icon');
+            const status = document.getElementById('ai-status');
+
+            status.innerText = statusText;
+
+            if (active) {
+                ring.classList.add('visualizer-active', 'border-accentAmber');
+                core.classList.add('scale-110');
+                if (isSpeaking) {
+                    icon.className = 'w-8 h-8 text-accentAmber animate-bounce';
+                } else {
+                    icon.className = 'w-8 h-8 text-red-400 animate-pulse';
+                }
+            } else {
+                ring.classList.remove('visualizer-active', 'border-accentAmber');
+                core.classList.remove('scale-110');
+                icon.className = 'w-8 h-8 text-neutral-500';
+            }
+        }
+    </script>
+</body>
+</html>
